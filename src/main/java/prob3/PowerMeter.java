@@ -9,19 +9,48 @@ public class PowerMeter {
 
     public void calculatePowerConsumption() {
         List<String> data = DataReader.readDataFromFile(DATA_FILE);
-        System.out.println("number of rows: " + data.size());
-        System.out.println("length of a row: " + data.get(0).length());
-        System.out.println("first entry: " + data.get(0));
 
-//        Integer firstEntry = Integer.parseInt(data.get(2));
-        Integer secondEntry = Integer.parseUnsignedInt(data.get(0), 2); // convert a binary string into an integer.
-        String number = Integer.toBinaryString(secondEntry);
-//        String gammaRate = calculateGammaRate(data);
-        System.out.println("first entry is: " + secondEntry);
-        System.out.println("first entry as string: " + number);
+        String gammaRate = calculateGammaRate(data);
+        String thetaRate = invertBytes(gammaRate);
+        Integer gamma = Integer.parseInt(gammaRate, 2);
+        Integer theta = Integer.parseInt(thetaRate, 2);
+        Integer power = gamma * theta;
+        System.out.println("gamma: " + gamma + " theta: " + theta + " power " + power);
+    }
+
+    private String invertBytes(String gammaRate) {
+        char[] chars = gammaRate.toCharArray();
+        StringBuffer sb = new StringBuffer();
+        for(int i=0; i< chars.length; i++){
+            sb.append(invert(chars[i]));
+        }
+        return sb.toString();
+    }
+
+    private char invert(char c) {
+        if(c == '1'){
+            return '0';
+        }
+        else return '1';
     }
 
     private String calculateGammaRate(List<String> data) {
-        return null;
+        StringBuffer buffer = new StringBuffer();
+        int rowLength = data.get(0).length();
+        for(int i=0; i < rowLength; i++){
+            buffer.append(getCharAtPosition(i, data));
+        }
+        return buffer.toString();
+    }
+
+    private char getCharAtPosition(int pos, List<String> data){
+        long numOnes =
+        data.
+        stream().
+        map(s -> {return s.charAt(pos);}).
+        filter(s -> s.equals('1')).
+        count();
+        System.out.println("number of ones at position " + pos + " is: " + numOnes);
+        return(numOnes > (data.size() / 2) ? '1' : '0');
     }
 }
