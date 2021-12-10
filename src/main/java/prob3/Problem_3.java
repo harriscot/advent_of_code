@@ -4,6 +4,7 @@ public class Problem_3 {
 
     public static void main(String... args){
         PowerMeter powerMeter = new PowerMeter();
-        powerMeter.calculatePowerConsumption();
+        // powerMeter.calculatePowerConsumption();
+        powerMeter.getLifeSupportRating();
     }
 }
