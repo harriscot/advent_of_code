@@ -3,6 +3,7 @@ package main.java.prob4;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class BingoCard {
     
@@ -12,17 +13,15 @@ public class BingoCard {
         card = new ArrayList<>();
     }
 
-    public void addLine(String line) {
+    void addLine(String line) {
         ArrayList<BingoNumber> row = new ArrayList<>();
         String[] numbers = line.trim().split("\\s+");
-        for(int i=0; i< numbers.length; i++){
-            try{
-            BingoNumber bingoNumber = createNumber(numbers[i]);
+
+        Stream.of(numbers).forEach(number -> {
+            BingoNumber bingoNumber = createNumber(number);
             row.add(bingoNumber);
-            } catch (NumberFormatException e){
-                System.out.println("exception in number " + numbers[i] + " " + e);
-            }
-        }
+        });
+
         card.add(row);
     }
 
@@ -36,21 +35,17 @@ public class BingoCard {
     }
   
     public List<BingoNumber> getColumn(int columnNumber){
-        List<BingoNumber> column = new ArrayList<>();
-        for(List<BingoNumber> row: card){
-            column.add(row.get(columnNumber));
-        }
-        return column;
+        return card.stream().map(row -> row.get(columnNumber)).toList();
     }
 
     public void markNumber(Integer number){
-        for(List<BingoNumber> row: card){
-            for(BingoNumber num: row){
+        card.stream().forEach(row -> {
+            row.stream().forEach(num -> {
                 if(number == num.getNumber()){
                     num.setCalled(true);
                 }
-            }
-        }
+            });
+        });
     }
 
     public boolean checkForWin() {
@@ -61,6 +56,7 @@ public class BingoCard {
         }
     }
 
+    //TODO
     private boolean checkColumns() {
         int rowLength = getRow(0).size();
         for(int i=0; i< rowLength; i++){
@@ -74,33 +70,23 @@ public class BingoCard {
     }
 
     private boolean checkRows() {
-        for(List<BingoNumber> row: card){
-            if(allNumbersCalled(row)){
-                System.out.println("We have a winning row!!! " + display(row));
-                return true;
-            }
-        }
-        return false;
+        return card.stream().anyMatch(row -> {
+            System.out.println("We have a winning row!!! " + display(row));
+            return allNumbersCalled(row);
+        });
     }
 
     private boolean allNumbersCalled(List<BingoNumber> numbers) {
-        for(BingoNumber number: numbers){
-            if(!number.isCalled()){
-                return false;
-            }
-        } 
-        return true;
+        return numbers.stream().allMatch(s -> s.isCalled());
     }
 
     public String display(List<BingoNumber> row) {
-        List<String> values = row.stream().
-        map(s -> {return String.valueOf(s.getNumber());}).
-        collect(Collectors.toList());
-        String output = "";
-        for(String value: values){
-            output = output.concat(value).concat(" ");
-        }
-        return output;
+        // build a string by concatenating all the numbers in a row.
+        return row.stream().
+            map(s -> { 
+                return String.valueOf(s.getNumber());
+            }).
+            collect(Collectors.joining(" "));
     }
 
 }

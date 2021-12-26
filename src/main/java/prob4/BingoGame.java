@@ -2,6 +2,7 @@ package main.java.prob4;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import main.java.util.DataReader;
 
@@ -15,10 +16,9 @@ public class BingoGame {
     public BingoGame() {
         cards = new ArrayList<>();
         loadInputs();
-        playGame();
     }
     
-    private void playGame() {
+    void playGame() {
         for(int i=0; i< calledNumbers.length; i++){
             callNumber(Integer.parseInt(calledNumbers[i]));
             if(cardHasWon()){
@@ -28,35 +28,26 @@ public class BingoGame {
     }
 
     private boolean cardHasWon() {
-        for(BingoCard card: cards){
-            if(card.checkForWin()){
-                return true;
-            }
-        }
-        return false;
+        return cards.stream().anyMatch(s -> s.checkForWin());
     }
 
     private void callNumber(Integer number){
-        for(BingoCard card: cards){
-            card.markNumber(number);
-        }
+        cards.stream().forEach(s -> s.markNumber(number));
     }
 
     public void loadInputs() {
         data = DataReader.readDataFromFile(DATA_FILE);
         calledNumbers = data.get(0).split(",");
-        for(int i = 0; i < calledNumbers.length; i++){
-            System.out.println(calledNumbers[i]);
-        }
+        // Stream.of(calledNumbers).forEach(System.out::println);
         setUpBingoCards();
         checkBingoCards();
     }
 
     private void checkBingoCards(){
         System.out.println("number of cards is: " + cards.size());
-        for(BingoCard card: cards){
-            System.out.println("first line: " + card.display(card.getRow(0)));
-        }
+        cards.stream().forEach(s -> { 
+            System.out.println("first line: " + s.display(s.getRow(0)));
+        });
     }
 
     private void setUpBingoCards() {
