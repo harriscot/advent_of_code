@@ -8,6 +8,16 @@ import java.util.stream.Stream;
 public class BingoCard {
     
     List<List<BingoNumber>> card;
+    boolean hasWon = false;
+    int cardNumber;
+
+    public int getCardNumber() {
+        return cardNumber;
+    }
+
+    public void setCardNumber(int cardNumber) {
+        this.cardNumber = cardNumber;
+    }
 
     public BingoCard() {
         card = new ArrayList<>();
@@ -28,6 +38,10 @@ public class BingoCard {
     private BingoNumber createNumber(String string) {
         String numberString = string.trim();
         return new BingoNumber(Integer.parseInt(numberString));
+    }
+
+    boolean hasWon() {
+        return this.hasWon;
     }
 
     public List<BingoNumber> getRow(int rowNumber){
@@ -61,7 +75,7 @@ public class BingoCard {
         for(int i=0; i< rowLength; i++){
             List<BingoNumber> column = getColumn(i);
             if(allNumbersCalled(column)){
-                System.out.println("We have a winning column!!! " + display(column));
+                // System.out.println("We have a winning column!!! " + display(column));
                 return true;
             }
         }
@@ -71,7 +85,7 @@ public class BingoCard {
     private boolean checkRows() {
         for(List<BingoNumber> row: card){
             if(allNumbersCalled(row)){
-                System.out.println("We have a winning row!!! " + display(row));
+                // System.out.println("We have a winning row!!! " + display(row));
                 return true;
             }
         }
@@ -102,13 +116,16 @@ public class BingoCard {
                 } else return 0;
             })
             .reduce(0, Integer::sum); 
-            System.out.println("total for row is: " + rowTotal);
+            // System.out.println("total uncalled for row is: " + rowTotal);
             totalUncalledNumbers += rowTotal;
         }
         System.out.println("total uncalled numbers on card = " + totalUncalledNumbers);
         System.out.println("called number is: " + calledNumber);
         int score = calledNumber * totalUncalledNumbers;
-        System.out.println("final score is: " + score);
+        System.out.println("final score for card number " + cardNumber + " is: " + score);
         }
 
+        void setWon(boolean hasWon){
+            this.hasWon = hasWon;
+        }
 }

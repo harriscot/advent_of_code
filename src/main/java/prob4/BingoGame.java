@@ -22,20 +22,35 @@ public class BingoGame {
         for(int i=0; i< calledNumbers.length; i++){
             int calledNumber = Integer.parseInt(calledNumbers[i]);
             callNumber(calledNumber);
-            if(cardHasWon(calledNumber)){
-                break;
-            }
+            checkCardForWin(calledNumber);
         }
     }
 
-    private boolean cardHasWon(int calledNumber) {
+    private boolean checkCardForWin(int calledNumber) {
         for(BingoCard card: cards){
-            if(card.checkForWin()){
+            if(card.checkForWin() && !card.hasWon()){
                 card.calculateScore(calledNumber);
-                return true;
+                card.setWon(true);
+                if(lastCard()){
+                    System.out.println("last card found");
+                    return true;
+                }
+                
             }
         }
         return false;
+    }
+
+    private boolean lastCard() {
+        int numberOfCards = cards.size();
+        int numberOfCardsThatHaveWon = 0;
+        
+        for(BingoCard card: cards){
+            if(card.hasWon()){
+                numberOfCardsThatHaveWon ++;
+            }
+        }
+        return numberOfCardsThatHaveWon == numberOfCards - 1;
     }
 
     private void callNumber(Integer number){
@@ -45,9 +60,9 @@ public class BingoGame {
     public void loadInputs() {
         data = DataReader.readDataFromFile(DATA_FILE);
         calledNumbers = data.get(0).split(",");
-        Stream.of(calledNumbers).forEach(System.out::println);
+        // Stream.of(calledNumbers).forEach(System.out::println);
         setUpBingoCards();
-        checkBingoCards();
+        // checkBingoCards();
     }
 
     private void checkBingoCards(){
@@ -59,10 +74,13 @@ public class BingoGame {
 
     private void setUpBingoCards() {
         BingoCard card = null;
+        int cardNumber = 1;
         for(String line: data){
             if("".equals(line)){
                 card = new BingoCard();
+                card.setCardNumber(cardNumber);
                 cards.add(card);
+                cardNumber ++;
             }
             if(!line.contains(",") && line.length() > 0){
                 card.addLine(line);
