@@ -20,15 +20,22 @@ public class BingoGame {
     
     void playGame() {
         for(int i=0; i< calledNumbers.length; i++){
-            callNumber(Integer.parseInt(calledNumbers[i]));
-            if(cardHasWon()){
+            int calledNumber = Integer.parseInt(calledNumbers[i]);
+            callNumber(calledNumber);
+            if(cardHasWon(calledNumber)){
                 break;
             }
         }
     }
 
-    private boolean cardHasWon() {
-        return cards.stream().anyMatch(s -> s.checkForWin());
+    private boolean cardHasWon(int calledNumber) {
+        for(BingoCard card: cards){
+            if(card.checkForWin()){
+                card.calculateScore(calledNumber);
+                return true;
+            }
+        }
+        return false;
     }
 
     private void callNumber(Integer number){
@@ -38,7 +45,7 @@ public class BingoGame {
     public void loadInputs() {
         data = DataReader.readDataFromFile(DATA_FILE);
         calledNumbers = data.get(0).split(",");
-        // Stream.of(calledNumbers).forEach(System.out::println);
+        Stream.of(calledNumbers).forEach(System.out::println);
         setUpBingoCards();
         checkBingoCards();
     }

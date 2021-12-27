@@ -56,7 +56,6 @@ public class BingoCard {
         }
     }
 
-    //TODO
     private boolean checkColumns() {
         int rowLength = getRow(0).size();
         for(int i=0; i< rowLength; i++){
@@ -70,10 +69,13 @@ public class BingoCard {
     }
 
     private boolean checkRows() {
-        return card.stream().anyMatch(row -> {
-            System.out.println("We have a winning row!!! " + display(row));
-            return allNumbersCalled(row);
-        });
+        for(List<BingoNumber> row: card){
+            if(allNumbersCalled(row)){
+                System.out.println("We have a winning row!!! " + display(row));
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean allNumbersCalled(List<BingoNumber> numbers) {
@@ -88,5 +90,25 @@ public class BingoCard {
             }).
             collect(Collectors.joining(" "));
     }
+
+    public void calculateScore(int calledNumber) {
+
+        int totalUncalledNumbers = 0;
+        for(List<BingoNumber> row: card){
+            int rowTotal = 
+            row.stream().map(s -> {
+                if(!s.isCalled()){
+                    return s.getNumber();
+                } else return 0;
+            })
+            .reduce(0, Integer::sum); 
+            System.out.println("total for row is: " + rowTotal);
+            totalUncalledNumbers += rowTotal;
+        }
+        System.out.println("total uncalled numbers on card = " + totalUncalledNumbers);
+        System.out.println("called number is: " + calledNumber);
+        int score = calledNumber * totalUncalledNumbers;
+        System.out.println("final score is: " + score);
+        }
 
 }
