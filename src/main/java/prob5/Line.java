@@ -29,6 +29,9 @@ public class Line {
                 points.add(new Point(start.getXCoordinate(), y));
             }
         }
+        if(isDiagonal()){
+            addDiagonalPoints();
+        }
         points.add(end);
     }
 
@@ -36,15 +39,26 @@ public class Line {
         return points;
     }
 
-    // the start should always be lower than the end.
-    private void validate() {
-        if(isHorizontal()){
-            if(start.getXCoordinate() > end.getXCoordinate()){
-                flip();
+    private void addDiagonalPoints(){
+        if(isDiagonalAscending()){
+            for(int x= start.getXCoordinate() + 1, y = start.getYCoordinate() + 1; x < end.getXCoordinate(); x++, y++){
+                points.add(new Point(x, y));
+            }
+        } else {
+            for(int x= start.getXCoordinate() + 1, y = start.getYCoordinate() - 1; x < end.getXCoordinate(); x++, y--){
+                points.add(new Point(x, y));
             }
         }
+    }
+
+    // the start should always be lower than the end.
+    private void validate() {
         if(isVertical()){
             if(start.getYCoordinate() > end.getYCoordinate()){
+                flip();
+            }
+        } else {
+            if(start.getXCoordinate() > end.getXCoordinate()){
                 flip();
             }
         }
@@ -65,6 +79,26 @@ public class Line {
     }
     boolean isHorizontal() {
         return this.start.getYCoordinate() == this.end.getYCoordinate();
+    }
+    boolean isDiagonal(){
+        return isDiagonalAscending() || isDiagonalDescending();
+    }
+    boolean isDiagonalAscending(){
+        // horizontal distance is difference between the x coordinates start and end.
+        int horizontal = this.end.getXCoordinate() - this.start.getXCoordinate();
+        // vertical distance is end - start y coordinates
+        int vertical = end.getYCoordinate() - start.getYCoordinate();
+        if(vertical == horizontal){
+            return true;
+        }   return false;
+    }
+    boolean isDiagonalDescending(){
+        int horizontal = this.end.getXCoordinate() - this.start.getXCoordinate();
+        // vertical distance is end - start y coordinates
+        int vertical = end.getYCoordinate() - start.getYCoordinate();
+        if(vertical == -horizontal){
+            return true;
+        }   return false;
     }
 
 }

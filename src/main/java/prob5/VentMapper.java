@@ -29,10 +29,10 @@ public class VentMapper {
     public void readInputData() {
         data = DataReader.readDataFromFile(DATA_FILE);
         data.stream().forEach(s -> {
-            Line line = lineFor(s);
-            if(line.isVertical() || line.isHorizontal()){
+            // Line line = lineFor(s);
+            // if(line.isVertical() || line.isHorizontal()){
                 lines.add(lineFor(s));
-            }
+            // }
         });
     }
    
