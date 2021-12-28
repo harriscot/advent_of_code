@@ -15,5 +15,8 @@ public class Point {
     public int getYCoordinate(){
         return yCoordinate;
     }
+    public String toString() {
+        return("Point at x: " + getXCoordinate() + " y: " + this.getYCoordinate());
+    }
 
 }

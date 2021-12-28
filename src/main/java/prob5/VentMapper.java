@@ -1,10 +1,10 @@
 package main.java.prob5;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import main.java.util.DataReader;
 
@@ -14,19 +14,29 @@ public class VentMapper {
     private List<String> data;
     private List<Line> lines;
     private List<Map<Point, Integer>> seaFloorMap;
+
+    public VentMapper() {
+        lines = new ArrayList<>();
+    }
     
     public void mapVents() {
         readInputData();
         createMap();
-        // plotDataOnMap();
-        // calculateNumberOfPointsWithMoreThanOneVent();
+        plotDataOnMap();
+        calculateNumberOfPointsWithMoreThanOneVent();
     }
-
+    
+    public void readInputData() {
+        data = DataReader.readDataFromFile(DATA_FILE);
+        data.stream().forEach(s -> {
+            Line line = lineFor(s);
+            if(line.isVertical() || line.isHorizontal()){
+                lines.add(lineFor(s));
+            }
+        });
+    }
+   
     private void createMap() {
-        // lines.stream().map(s -> {
-        //     s.getEnd().
-        // });
-        // lines.stream().max(Comparator.comparing(s -> {s.getEnd().get}));
         int largestX = 0;
         int largestY = 0;
         for(Line line: lines){
@@ -39,22 +49,45 @@ public class VentMapper {
             }
         }
         System.out.println("largest x is " + largestX + ", largest y is " + largestY);
-        seaFloorMap = new ArrayList<>(largestX);
-        for(int i=0; i< largestX; i++){
-            LinkedHashMap xRow = new LinkedHashMap(largestY);
-            for(int j=0; j<largestY; j++){
-                xRow.put(new Point(i,j),0);
+        seaFloorMap = new ArrayList<>(largestY + 1);
+        for(int y=0; y<= largestY; y++){
+            LinkedHashMap<Point, Integer> row = new LinkedHashMap<>(largestX +1);
+            for(int x=0; x<=largestX; x++){
+                row.put(new Point(x,y),0);
             }
-            seaFloorMap.add(xRow);
+            seaFloorMap.add(row);
         }
-        
+        System.out.println("sea floor map has " + seaFloorMap.size() + " rows");
     }
 
-    public void readInputData() {
-        data = DataReader.readDataFromFile(DATA_FILE);
-        data.stream().forEach(s -> {
-            lines.add(lineFor(s));
-        });
+    private void plotDataOnMap() {
+        for(Line line: lines){
+            for(Point point: line.getPoints()){
+                markPointOnMap(point);
+            }
+        }
+    }
+
+    private void calculateNumberOfPointsWithMoreThanOneVent() {
+        int totalCrossPoints = 0;
+        for(Map<Point,Integer> row: seaFloorMap){
+            for(Entry<Point, Integer> coordinate: row.entrySet()){
+                if(coordinate.getValue() >= 2){
+                    totalCrossPoints ++;
+                }
+            }
+        }
+        System.out.println("total cross points = " + totalCrossPoints);
+    }
+
+    private void markPointOnMap(Point point) {
+       Map<Point, Integer> row = seaFloorMap.get(point.getYCoordinate());
+        for(Entry<Point, Integer> coordinate: row.entrySet()){
+            if(coordinate.getKey().getXCoordinate() == point.getXCoordinate() 
+            && coordinate.getKey().getYCoordinate() == point.getYCoordinate()){
+                coordinate.setValue(coordinate.getValue() + 1);
+            }
+        }
     }
 
     private Line lineFor(String coordinateString) {
@@ -66,6 +99,7 @@ public class VentMapper {
         String[] lineCoordinates = coordinateString.split(",");
         start = new Point(Integer.parseInt(lineCoordinates[0]), Integer.parseInt(lineCoordinates[1]));
         end = new Point(Integer.parseInt(lineCoordinates[2]), Integer.parseInt(lineCoordinates[3]));
-        return new Line(start, end);
+        Line line = new Line(start, end);
+        return line;
     }
 }
