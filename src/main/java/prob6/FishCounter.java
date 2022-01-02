@@ -1,7 +1,9 @@
 package main.java.prob6;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -10,55 +12,81 @@ import main.java.util.DataReader;
 public class FishCounter {
 
     private final String DATA_FILE = "src/main/java/resources/prob6_input.txt";
-    List<Integer> initialBreedingState;
-    List<LanternFish> shoal;
+    
+    // The shoal gets too big if represented by a linear list of individual fish. 
+    // instead represent the shoal by a Map that contains the number of days to birth
+    // as the key and the number of fish in that group as the value.
+    Map<Integer, Long> shoal;
     Integer dayNumber;
 
     public void runBreedingSimulation() {
         initialise();
-        System.out.println("number of fish in initial shoal = " + initialBreedingState.stream().count());
+        System.out.println("number of fish in initial shoal = " + countFish());
 
-        breedForEightyDays();
+        breedForDays();
     }
     
-    private void breedForEightyDays() {
-        for(dayNumber = 0; dayNumber < 80; dayNumber ++){
+    private void breedForDays() {
+        for(dayNumber = 0; dayNumber < 256; dayNumber ++){
             moveOnOneDay();
         }
     }
     
     private void moveOnOneDay() {
-        int numberOfFry = 0;
+        Map<Integer, Long> shoalCopy = new TreeMap<>(); 
         
-        for(LanternFish fish: shoal){
-            if(fish.getDaysUntilGivesBirth() == 0){
-                fish.setDaysUntilGivesBirth(6);
-                numberOfFry ++;
+        for(Map.Entry<Integer, Long> entry: shoal.entrySet()){
+            // If any fish are at zero days they produce a new fish with eight days until it breeds.
+            if(entry.getKey() == 0){
+                shoalCopy.put(8, entry.getValue());
             } else {
-                int daysUntilBirth = fish.getDaysUntilGivesBirth() -1;
-                fish.setDaysUntilGivesBirth(daysUntilBirth);
+                // all fish are one day closer to giving birth.
+                int key = entry.getKey();
+                Long value = entry.getValue();
+                shoalCopy.put(key - 1, value);
             }
         }
-
-        for(int i=0; i< numberOfFry; i++){
-            shoal.add(new LanternFish(8));
+        // Add the fish that just gave birth to those at position 6. 
+        if(shoalCopy.get(8) != null && shoalCopy.get(8) > 0L){
+            long numFish = shoalCopy.get(8);
+            if(shoalCopy.get(6) != null){
+                numFish += shoalCopy.get(6);
+            }
+            shoalCopy.remove(6);
+            shoalCopy.put(6, numFish);
         }
+        shoal.clear();
+        shoal.putAll(shoalCopy); 
+        
+        System.out.println("after " + (dayNumber + 1) + " days number of fish in shoal = " + countFish());
+        System.out.println("shoal entries: " + printShoal());
+    }
 
-        System.out.println("after " + (dayNumber + 1) + " days number of fish in shoal = " + shoal.stream().count());
+    private String printShoal() {
+        StringBuilder builder = new StringBuilder();
+        for(Map.Entry<Integer, Long> entry: shoal.entrySet()){
+            builder.append(" " + entry.getKey() + " " + entry.getValue());
+        }
+        return builder.toString();
+    }
+
+    private Long countFish() {
+        return shoal.
+                entrySet().
+                stream().
+                map(s -> s.getValue()).
+                reduce(0L, Long::sum);
     }
 
     private void initialise(){
         List<String> data = DataReader.readDataFromFile(DATA_FILE);
         String [] timesToBirth = data.get(0).split(",");
-        shoal = new ArrayList<>();
+        shoal = new TreeMap<>();
         
-        initialBreedingState = 
-            Stream.of(timesToBirth).
-            map(s -> Integer.parseInt(s)).
-            collect(Collectors.toList());
+        // process all the fish in the initial array, grouping them by days to birth and counting the number of fish in each group.
+        shoal = Stream.of(timesToBirth).
+        map(s -> Integer.parseInt(s)).
+        collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
 
-        shoal = initialBreedingState.stream().map(s -> {
-            return new LanternFish(s);
-        }).collect(Collectors.toList());
     }
 }
