@@ -15,6 +15,7 @@ import main.java.util.DataReader;
 
 public class CrabAligner {
     private final String DATA_FILE = "src/main/java/resources/prob7_input.txt";
+    // private final String DATA_FILE = "src/main/java/resources/prob7_test_input.txt";
     List<Integer> initialCrabPositions;
     Map<Integer, Long> dataMap;
     TreeMap<Integer, Long> sortedDataMap;
@@ -25,12 +26,45 @@ public class CrabAligner {
      * Analyse the numbers - are they all unique? How are they distributed?
      * 
      * Could try moving to the mode, or failing that the mean. 
+     * Ended up using an empirical approach, calculating the cost of all postions and then finding the cheapest.
      * 
      */
     public void alignCrabs() {
         initialise();
         calculateMetadata();
         moveIntoAlignment();
+        moveIntoAlignmentPartTwo();
+    }
+
+    private void moveIntoAlignmentPartTwo() {
+        fuelCosts = new TreeMap<>();
+        int maxPosition = Collections.max(initialCrabPositions);
+        
+        for(int position = 0; position <= maxPosition; position ++){
+            fuelCosts.put(position, calculateNewCostAtPosition(position));
+        }
+
+        Entry<Integer, Integer> minFuel = Collections.min(fuelCosts.entrySet(), Comparator.comparing(Entry::getValue));
+        System.out.println("new calculation: minimum fuel is at position " + minFuel.getKey() + " for a cost of " + minFuel.getValue());
+    }
+
+    private Integer calculateNewCostAtPosition(Integer position){
+        Integer totalCost = 0;
+        // Each move becomes more expensive. A move of 3 places costs 1 + 2 + 3 = 6 fuel;
+        for(Integer pos: initialCrabPositions){
+            int numberOfMoves = Math.abs(pos - position);
+            int fuelCost = fuelCostFor(numberOfMoves);
+            totalCost += fuelCost;
+        }
+        return totalCost;
+    }
+    
+    private int fuelCostFor(int numberOfMoves) {
+        int sum = 0;
+        for(int i=0; i<=numberOfMoves; i++){
+            sum += i;
+        }
+        return sum;
     }
 
     private void moveIntoAlignment() {
@@ -44,7 +78,7 @@ public class CrabAligner {
         Entry<Integer, Integer> minFuel = Collections.min(fuelCosts.entrySet(), Comparator.comparing(Entry::getValue));
         System.out.println("minimum fuel is at position " + minFuel.getKey() + " for a cost of " + minFuel.getValue());
     }
-    
+
     private Integer calculateCostAtPosition(Integer position){
         // Calculate how many places each crab has to move to get to required position.
         return initialCrabPositions.stream().map(s -> {
@@ -66,7 +100,6 @@ public class CrabAligner {
         collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
 
         sortedDataMap = new TreeMap<>(dataMap);
-        // System.out.println(printPositions(sortedDataMap));
 
     }
 
@@ -95,14 +128,6 @@ public class CrabAligner {
             }
         }
         return highestEntry;
-    }
-
-    private String printPositions(Map<Integer, Long> map) {
-        StringBuilder builder = new StringBuilder();
-        for(Map.Entry<Integer, Long> entry: map.entrySet()){
-            builder.append("key: " + entry.getKey() + " count: " + entry.getValue() + "\n");
-        }
-        return builder.toString();
     }
 
 }
