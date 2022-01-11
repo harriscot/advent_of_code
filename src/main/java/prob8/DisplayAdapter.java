@@ -27,21 +27,122 @@ public class DisplayAdapter {
     }
 
     public void mapInputs() {
+        // an entry contains a list of ten codes representing the digits 0-9, and a list of codes representing the numbers in a display.
         Entry<List<String>, List<String>> entry = dataRows.entrySet().iterator().next();
-        // map the segments
-        // top segment is the one that is in 7 but not in 1.
-        // middle segment is the one 
+        
+        // the display number key lists each display number along with the list of characters that represent each number. 
         Map<Number, List<Character>> displayNumberKey = new HashMap<>();
+        
+        // the segment key defines the character used to display each segment of a number display.
         Map<Segment, Character> segmentKey = new HashMap<>();
-        List<Character> horizontalSegments = new ArrayList<>();
         mapSimpleNumbers(displayNumberKey, entry);
-        displayNumberKey.entrySet().stream().forEach(s -> System.out.println(s.getKey().toString() + s.getValue()));
+        List<Character> horizontalSegments = new ArrayList<>();
+        
+        // top segment is the one that is in 7 but not in 1.
+
+        // Note that the order of these method calls is critical. Don't rearrange them!
         mapTopSegment(displayNumberKey, segmentKey);
         mapHorizontalSegments(entry.getKey(), horizontalSegments);
         mapCentreSegment(displayNumberKey, horizontalSegments, segmentKey);
-        
+        mapZero(entry.getKey(), displayNumberKey, segmentKey);
+        mapBottomLeftSegment(displayNumberKey, horizontalSegments, segmentKey);
+        mapNine(entry.getKey(), displayNumberKey, segmentKey);
+        mapSix(entry.getKey(), displayNumberKey);
+        mapTwo(entry.getKey(), displayNumberKey, segmentKey);
+        mapThree(entry.getKey(), displayNumberKey, segmentKey);
+        mapFive(entry.getKey(), displayNumberKey);
+        displayNumberKey.entrySet().stream().forEach(s -> System.out.println(s.getKey().toString() + s.getValue()));
     }
 
+
+    private void mapFive(List<String> key, Map<Number, List<Character>> displayNumberKey) {
+        // Five is the remaining 5 segment number.
+        for(String code: key){
+            if(code.length() == 5){
+                if( charsFor(code).containsAll(displayNumberKey.get(Number.TWO))
+                 || charsFor(code).containsAll(displayNumberKey.get(Number.THREE))){
+                    continue;
+                } else {
+                    displayNumberKey.put(Number.FIVE, charsFor(code));
+                    break;
+                }
+            }
+        }
+    }
+
+    private void mapThree(List<String> key, Map<Number, List<Character>> displayNumberKey,
+            Map<Segment, Character> segmentKey) {
+        // Three is the five digit number with the same segments as one.
+        for(String code: key){
+            if(code.length() == 5){
+                if(charsFor(code).containsAll(displayNumberKey.get(Number.ONE))){
+                    displayNumberKey.put(Number.THREE, charsFor(code));
+                }
+            }
+        }
+    }
+
+    private void mapTwo(List<String> key, Map<Number, List<Character>> displayNumberKey,
+            Map<Segment, Character> segmentKey) {
+        // Two is the five segment number with a bottom left segment.
+        for(String code: key){
+            if(code.length() == 5){
+                if(charsFor(code).contains(segmentKey.get(Segment.LOWER_LEFT))){
+                    displayNumberKey.put(Number.TWO, charsFor(code));
+                }
+            }
+        }
+    }
+
+    private void mapSix(List<String> key, Map<Number, List<Character>> displayNumberKey) {
+        // six is the remaining six segment number.
+        for(String code: key){
+            if(code.length() == 6){
+                if( charsFor(code).containsAll(displayNumberKey.get(Number.ZERO))
+                 || charsFor(code).containsAll(displayNumberKey.get(Number.NINE))){
+                    continue;
+                } else {
+                    displayNumberKey.put(Number.SIX, charsFor(code));
+                    break;
+                }
+            }
+        }
+    }
+
+    private void mapBottomLeftSegment(Map<Number, List<Character>> displayNumberKey, List<Character> horizontalSegments,
+            Map<Segment, Character> segmentKey) {
+        // the bottom left segment is in zero but not in four, and is not horizontal.
+        List<Character> segmentsInFour = displayNumberKey.get(Number.FOUR);
+        List<Character> segmentsInZero = displayNumberKey.get(Number.ZERO);
+        List<Character> bottomLeft = new ArrayList<>();
+        bottomLeft.addAll(segmentsInZero);
+        bottomLeft.removeAll(segmentsInFour);
+        bottomLeft.removeAll(horizontalSegments);
+        segmentKey.put(Segment.LOWER_LEFT, bottomLeft.get(0));
+    }
+
+    private void mapNine(List<String> key, Map<Number, List<Character>> displayNumberKey,
+            Map<Segment, Character> segmentKey) {
+        // Nine is the six segment number with no bottom left segment. 
+        for(String code: key){
+            if(code.length() == 6){
+                if(!charsFor(code).contains(segmentKey.get(Segment.LOWER_LEFT))){
+                    displayNumberKey.put(Number.NINE, charsFor(code));
+                }
+            }
+        }
+    }
+
+    private void mapZero(List<String> key, Map<Number, List<Character>> displayNumberKey, Map<Segment, Character> segmentKey) {
+        // zero is the six segment number with no middle.
+        for(String code: key){
+            if(code.length() == 6){
+                if(!charsFor(code).contains(segmentKey.get(Segment.MIDDLE))){
+                    displayNumberKey.put(Number.ZERO, charsFor(code));
+                }
+            }
+        }
+    }
 
     private void mapCentreSegment(Map<Number, List<Character>> displayNumberKey, List<Character> horizontalSegments,
             Map<Segment, Character> segmentKey) {
