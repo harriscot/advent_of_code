@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import main.java.util.DataReader;
 
@@ -26,32 +25,66 @@ public class DisplayAdapter {
         initialise();
     }
 
-    public void mapInputs() {
-        // an entry contains a list of ten codes representing the digits 0-9, and a list of codes representing the numbers in a display.
-        Entry<List<String>, List<String>> entry = dataRows.entrySet().iterator().next();
+    public void calculateTotalForAllRows() {
+        Optional<Integer> totalForAllRows = dataRows.entrySet().
+                                stream().
+                                map(s -> {
+                                    Map<Number, List<Character>> displayNumberKey = mapInputs(s.getKey());
+                                    return calculateDisplayValue(s.getValue(), displayNumberKey);
+                                }).reduce(Integer::sum);
+        System.out.println(" the grand total is: " + totalForAllRows);
+    }
+
+    private Integer calculateDisplayValue(List<String> value, Map<Number, List<Character>> displayNumberKey) {
+        String displayNumbers = value.
+                                stream().
+                                map(s -> {
+                                    return displayNumberFor(s, displayNumberKey).getValue();
+                                }).
+                                collect(Collectors.joining());
+        Integer displayValue = Integer.parseInt(displayNumbers);
+        System.out.println("display numbers" + displayNumbers);
+        return displayValue;
+    }
+
+    private Number displayNumberFor(String s, Map<Number, List<Character>> displayNumberKey) {
+        List<Character> characterCode = charsFor(s);
+        for( Entry<Number, List<Character>> keyEntry :displayNumberKey.entrySet()){
+            if(keyEntry.getValue().size() == characterCode.size()
+             && keyEntry.getValue().containsAll(characterCode)){
+                return keyEntry.getKey();
+            }
+        }
+        return null;
+    }
+
+
+    public Map<Number, List<Character>> mapInputs(List<String> list) {
+        // The argument is a list of ten codes representing the digits 0-9, in a display.
         
         // the display number key lists each display number along with the list of characters that represent each number. 
         Map<Number, List<Character>> displayNumberKey = new HashMap<>();
         
         // the segment key defines the character used to display each segment of a number display.
         Map<Segment, Character> segmentKey = new HashMap<>();
-        mapSimpleNumbers(displayNumberKey, entry);
+        mapSimpleNumbers(displayNumberKey, list);
         List<Character> horizontalSegments = new ArrayList<>();
         
         // top segment is the one that is in 7 but not in 1.
 
         // Note that the order of these method calls is critical. Don't rearrange them!
         mapTopSegment(displayNumberKey, segmentKey);
-        mapHorizontalSegments(entry.getKey(), horizontalSegments);
+        mapHorizontalSegments(list, horizontalSegments);
         mapCentreSegment(displayNumberKey, horizontalSegments, segmentKey);
-        mapZero(entry.getKey(), displayNumberKey, segmentKey);
+        mapZero(list, displayNumberKey, segmentKey);
         mapBottomLeftSegment(displayNumberKey, horizontalSegments, segmentKey);
-        mapNine(entry.getKey(), displayNumberKey, segmentKey);
-        mapSix(entry.getKey(), displayNumberKey);
-        mapTwo(entry.getKey(), displayNumberKey, segmentKey);
-        mapThree(entry.getKey(), displayNumberKey, segmentKey);
-        mapFive(entry.getKey(), displayNumberKey);
+        mapNine(list, displayNumberKey, segmentKey);
+        mapSix(list, displayNumberKey);
+        mapTwo(list, displayNumberKey, segmentKey);
+        mapThree(list, displayNumberKey, segmentKey);
+        mapFive(list, displayNumberKey);
         displayNumberKey.entrySet().stream().forEach(s -> System.out.println(s.getKey().toString() + s.getValue()));
+        return displayNumberKey;
     }
 
 
@@ -203,8 +236,8 @@ public class DisplayAdapter {
         System.out.println("top segment: " + topSegment);
     }
 
-    private void mapSimpleNumbers(Map<Number, List<Character>> displayNumberKey, Entry<List<String>, List<String>> entry) {
-        for(String code: entry.getKey()) {
+    private void mapSimpleNumbers(Map<Number, List<Character>> displayNumberKey, List<String> list) {
+        for(String code: list) {
             switch(code.length()){
                 case NUMBER_OF_SEGMENTS_IN_DIGIT_1:
                     displayNumberKey.put(Number.ONE, charsFor(code));
@@ -223,7 +256,10 @@ public class DisplayAdapter {
     }
 
     private List<Character> charsFor(String code) {
-        return code.chars().mapToObj(e -> (char) e).collect(Collectors.toList());
+        return code.
+                chars().
+                mapToObj(e -> (char) e).
+                collect(Collectors.toList());
     }
 
     public void adapt() {
@@ -264,7 +300,5 @@ public class DisplayAdapter {
         }
         // dataRows.entrySet().stream().forEach(System.out::println);
     }
-
-    
 
 }
