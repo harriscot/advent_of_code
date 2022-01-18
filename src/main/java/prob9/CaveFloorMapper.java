@@ -1,7 +1,6 @@
 package main.java.prob9;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -9,8 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.Map.Entry;
 
 import main.java.util.DataReader;
 
@@ -136,7 +133,8 @@ public class CaveFloorMapper {
         lowPoints = new ArrayList<>();
         // Work through the entire floor map, columnn by column and row by row. 
         // For each point look up the heights of the adjacent points above and below, to left and to right. 
-        // If this point is the lowest of the group set lowPoint to true.
+        // Each low point is surrounded by four higher points.
+        // If this point is a low point, set lowPoint to true.
         for(int yPosition = 0; yPosition < CAVE_FLOOR_Y_AXIS_SIZE; yPosition ++){
             for(int xPosition = 0; xPosition < CAVE_FLOOR_WIDTH; xPosition ++){
                 checkIfLowestPointInBasin(yPosition, xPosition);
