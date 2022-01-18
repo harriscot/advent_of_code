@@ -4,28 +4,46 @@ public class Point {
     private int xPosition;
     private int yPosition;
     private int height;
-    private boolean isLowestAdjacent;
+    private boolean isLowestPointInBasin;
+    private boolean searchDone;
 
     public Point(int xPosition, int yPosition, Integer height) {
         this.xPosition = xPosition;
         this.yPosition = yPosition;
         this.height = height;
-        isLowestAdjacent = false;
+        isLowestPointInBasin = false;
+        searchDone = false;
     }
 
     public String toString(){
         return "" + xPosition + ":" + yPosition + ":" + height;
     }
 
-    boolean isLowestAdjacent(){
-        return this.isLowestAdjacent;
+    boolean isLowestPointInBasin(){
+        return this.isLowestPointInBasin;
     }
 
-    void setIsLowestAdjacent(boolean isLowest){
-        this.isLowestAdjacent = isLowest;
+    void setIsLowestPointInBasin(boolean isLowest){
+        this.isLowestPointInBasin = isLowest;
     }
 
     int getHeight() {
         return height;
+    }
+
+    int getXPosition() {
+        return xPosition;
+    }
+
+    int getYPosition() {
+        return yPosition;
+    }
+
+    public void setSearchDone(boolean b) {
+        this.searchDone = b;
+    }
+
+    boolean getSearchDone() {
+        return this.searchDone;
     }
 }
