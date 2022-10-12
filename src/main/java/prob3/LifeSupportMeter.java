@@ -2,6 +2,7 @@ package main.java.prob3;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import main.java.util.DataReader;
 
@@ -33,8 +34,10 @@ public class LifeSupportMeter {
     
     private List<String> filterCo2Data(int pos, List<String> list) {
         char leastCommonValueAtPosition = getLeastCommonValueAtPosition(pos, list);
-        List<String> filteredList = list.stream()
-        .filter(s -> s.charAt(pos) == leastCommonValueAtPosition).toList();
+        List<String> filteredList = list    
+                                    .stream()
+                                    .filter(s -> s.charAt(pos) == leastCommonValueAtPosition)  
+                                                                  .collect(Collectors.toList());
         System.out.println("co2 data: at bit position " + pos + " we retained " + filteredList.size() + " entries.");
         return filteredList;
     }
@@ -68,8 +71,7 @@ public class LifeSupportMeter {
     private List<String> filterData(int bitPosition, List<String> list) {
         char commonestValueAtPosition = getCommonestValueAtPosition(bitPosition, list);
         List<String> filteredList = list.stream()
-        .filter(s -> s.charAt(bitPosition) == commonestValueAtPosition).toList();
-        // System.out.println("at bit position " + bitPosition + " we retained " + filteredList.size() + " entries.");
+        .filter(s -> s.charAt(bitPosition) == commonestValueAtPosition).collect(Collectors.toList());
         return filteredList;
     }
 
@@ -81,8 +83,6 @@ public class LifeSupportMeter {
         filter(s -> s.equals('1')).
         count();
         char commonest = numOnes >= (listSize / 2) ? '1' : '0';
-        // System.out.println("For position " + bitPosition + ", with list size " + listSize + 
-        //                    " the number of ones is "+ numOnes + " and the commonest character is " + commonest);
         return commonest;
     }
 
