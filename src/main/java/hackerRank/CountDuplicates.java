@@ -1,4 +1,4 @@
-package main.java.countDuplicates;
+package main.java.hackerRank;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +25,7 @@ public class CountDuplicates {
         int duplicatedNumbers = 0;
         for(int count: counts.values()){
             if(count > 1){
-                duplicatedNumbers ++;
+                duplicatedNumbers++;
             }
         }
         return duplicatedNumbers;
@@ -33,14 +33,24 @@ public class CountDuplicates {
 
     private HashMap<Integer, Integer> mapValues(List<Integer> data) {
         HashMap<Integer, Integer> counts = new HashMap<>();
-        for (Integer number : data) {
-            if (counts.containsKey(number)) {
-                int count = counts.get(number);
-                counts.put(number, ++count);
+
+        data.stream().forEach(s -> {
+            if(counts.containsKey(s)){
+                int count = counts.get(s);
+                counts.put(s, ++count);
             } else {
-                counts.put(number, 1);
+                counts.put(s, 1);
             }
-        }
+        });
+
+        // for (Integer number : data) {
+        //     if (counts.containsKey(number)) {
+        //         int count = counts.get(number);
+        //         counts.put(number, ++count);
+        //     } else {
+        //         counts.put(number, 1);
+        //     }
+        // }
         return counts;
     }
 
