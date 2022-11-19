@@ -56,6 +56,18 @@ public class BracketMatcher {
         System.out.println("Is first bracket opening for type square? " + square + " parentheses? " + parens + " curly? " + curly);
     }
 
+    private boolean isFirstBracketOpenForType(BracketType type, List<Character> charList) {
+        for(Character c: charList){
+            if(isBracket(c) && isSameTypeOfBracket(type, c)) {
+                if(isOpeningBracket(c) ){
+                    return true;
+                }
+                return false;
+            }
+        }
+        return false;
+    }
+
     private boolean checkNumbersOfBracketsMatch(List<Character> chars){
         boolean squareBracketCountMatches = checkBracketCountsMatch(chars, BracketType.SQUARE);
         boolean parenthesesCountMatches = checkBracketCountsMatch(chars, BracketType.PARENS);
@@ -82,18 +94,6 @@ public class BracketMatcher {
             }
         }
         return openCount == closeCount;
-    }
-
-    private boolean isFirstBracketOpenForType(BracketType type, List<Character> charList) {
-        for(Character c: charList){
-            if(isBracket(c) && isSameTypeOfBracket(type, c)) {
-                if(isOpeningBracket(c) ){
-                    return true;
-                }
-                return false;
-            }
-        }
-        return false;
     }
 
     /*
