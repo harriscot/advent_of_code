@@ -30,11 +30,12 @@ public class BracketMatcher {
     }
 
     /*
-     * Analyse the input string. Count the pairs of matching brackets of each type 
-     * and return the following statistics: 
-     *   Number of pairs of matching square brackets, curly brackets and braces. 
-     *   Number of non-matching square brackets, curly brackets and braces. 
-     * A pair is an opening bracket followed by a closing bracket.
+     * Analyse the input string. The brackets must match according to these criteria:
+     * For any given bracket type the first must not be a closing bracket. 
+     * Each opening bracket must be matched by a closing bracket. 
+     * The number of opening and closing brackets for a given type must be equal. 
+     * Orphan closing brackets are not permitted anywhere in the string, 
+     * i.e. each closing bracket must be preceded by an opening bracket of the same type. 
      * 
      */
     private void matchBrackets(String input) {
@@ -99,10 +100,11 @@ public class BracketMatcher {
      */
     private void checkBracketSequence(List<Character> chars) {
         boolean squareBracketSequenceOk = checkBracketSequence(chars, BracketType.SQUARE);
-        System.out.println("square bracket sequence is ok: " + squareBracketSequenceOk);
         boolean parenthesesSequenceOk = checkBracketSequence(chars, BracketType.PARENS);
-        System.out.println("parentheses sequence is ok: " + parenthesesSequenceOk);
         boolean curlyBracketSequenceOk = checkBracketSequence(chars, BracketType.CURLY);
+        
+        System.out.println("square bracket sequence is ok: " + squareBracketSequenceOk);
+        System.out.println("parentheses sequence is ok: " + parenthesesSequenceOk);
         System.out.println("curly bracket sequence is ok: " + curlyBracketSequenceOk);
     }
         
@@ -176,7 +178,10 @@ public class BracketMatcher {
 
     private List<Character> convertStringToCharacterList(String input) {
         List<Character> chars;
-        chars = input.chars().mapToObj(s -> (char) s).collect(Collectors.toList());
+        chars = input.
+                chars().
+                mapToObj(s -> (char) s).
+                collect(Collectors.toList());
         return chars;
     }
  
