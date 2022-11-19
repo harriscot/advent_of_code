@@ -57,12 +57,15 @@ public class BracketMatcher {
     }
 
     private boolean checkNumbersOfBracketsMatch(List<Character> chars){
-        System.out.println("for type square, number of brackets match: " + checkBracketCountsMatch(chars, BracketType.SQUARE));
-        System.out.println("for type parens, number of brackets match: " + checkBracketCountsMatch(chars, BracketType.PARENS));
-        System.out.println("for type curly, number of brackets match: " + checkBracketCountsMatch(chars, BracketType.CURLY));
-        return    checkBracketCountsMatch(chars, BracketType.SQUARE)
-               && checkBracketCountsMatch(chars, BracketType.PARENS)
-               && checkBracketCountsMatch(chars, BracketType.CURLY);
+        boolean squareBracketCountMatches = checkBracketCountsMatch(chars, BracketType.SQUARE);
+        boolean parenthesesCountMatches = checkBracketCountsMatch(chars, BracketType.PARENS);
+        boolean curlyBracketCountMatches = checkBracketCountsMatch(chars, BracketType.CURLY);
+
+        System.out.println("for type square, number of brackets match: " + squareBracketCountMatches);
+        System.out.println("for type parens, number of brackets match: " + parenthesesCountMatches);
+        System.out.println("for type curly, number of brackets match: " + curlyBracketCountMatches);
+
+        return squareBracketCountMatches && parenthesesCountMatches && curlyBracketCountMatches;
     }
 
     private boolean checkBracketCountsMatch(List<Character> chars, BracketType type){
@@ -185,7 +188,6 @@ public class BracketMatcher {
         return chars;
     }
  
-
     private boolean isSameTypeOfBracket(BracketType type, Character c){
         return (c.equals(type.open()) || c.equals(type.close()));
     }
