@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 /*
- * HackerRank problem used in AutoRek tech check.
+ * HackerRank problem.
  * Given an input array of integers, count the number of duplicates. 
  * Return the number of integer values that are duplicated. 
  */
