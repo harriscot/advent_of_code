@@ -1,0 +1,30 @@
+.outer {
+    color: darkslateblue;
+    background-color: lightskyblue;
+    border: solid mediumaquamarine 4px;
+    width: 500px;
+    height: 300px;
+    position: absolute;
+}
+
+.middle {
+    color: darkslateblue;
+    background-color:   lightblue;
+    border: solid mediumaquamarine 4px;
+    width: 400px;
+    height: 250px;
+    position: absolute;
+    margin-left: 50px;
+    margin-top: 25px;
+}
+
+.inner {
+    color: darkslateblue;
+    background-color: mediumturquoise;
+    border: solid cornflowerblue 4px;
+    width: 300px;
+    height: 200px;
+    position: absolute;
+    margin-left: 100px;
+    margin-top: 50px;
+}
